@@ -24,6 +24,8 @@ El **Desarrollo Guiado por Pruebas (TDD)** sigue este ciclo:
 
 Las **anotaciones** en JUnit son **metadatos** que proporcionan información adicional al código y afectan la ejecución de las pruebas. Se utilizan para definir el comportamiento y el ciclo de vida de los **métodos de prueba**.
 
+> Ver [library_Vs_framework.md](library_Vs_framework.md)
+
 Por ejemplo:
 ```java
 @BeforeEach
