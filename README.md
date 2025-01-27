@@ -95,97 +95,120 @@ Vamos a escribir pruebas para la clase `CuentaBancaria`.
 
 ### **Código de `CuentaBancaria`**
 ```java
+package org.example;
+
 /**
- * Representa una cuenta bancaria con operaciones básicas.
+ * Representa una cuenta bancaria con operaciones básicas
  */
 public class CuentaBancaria {
 
-    private double saldo;
+   private double saldo;
 
-    /**
-     * Deposita una cantidad en la cuenta.
-     * @param cantidad Monto a depositar, debe ser positivo.
-     */
-    public void depositar(double cantidad) {
-        if (cantidad < 0) {
-            throw new IllegalArgumentException("El monto debe ser positivo");
-        }
-        saldo += cantidad;
-    }
+   /**
+    * Deposita una cantidad en la cuenta
+    * @param cantidad cantidad de dinero a ingresar
+    * @throws IllegalArgumentException en caso de que la cantidad indicada sea un valor negativo
+    */
+   public void depositar(double cantidad) {
+      if( cantidad < 0 ) {
+         // System.out.println("El saldo no puede ser negativo");
+         throw new IllegalArgumentException("La cantidad no puede ser negativa");
+      }
+      this.saldo += cantidad;
+   }
 
-    /**
-     * Retira una cantidad de la cuenta si hay saldo suficiente.
-     * @param cantidad Monto a retirar.
-     * @return {@code true} si la operación fue exitosa, {@code false} si no hay saldo suficiente.
-     */
-    public boolean retirar(double cantidad) {
-        if (cantidad < 0) {
-            throw new IllegalArgumentException("No se puede retirar una cantidad negativa");
-        }
-        if (saldo >= cantidad) {
-            saldo -= cantidad;
-            return true;
-        }
-        return false;
-    }
 
-    /**
-     * Obtiene el saldo actual de la cuenta.
-     * @return El saldo disponible en la cuenta.
-     */
-    public double obtenerSaldo() {
-        return saldo;
-    }
+
+   /**
+    * Retira una cantidad de la cuenta si hay saldo suficiente.
+    * @param cantidad Monto a retirar.
+    * @return {@code true} si la operación fue exitosa, {@code false} si no hay saldo suficiente.
+    */
+   public boolean retirar(double cantidad) {
+      // Casos:
+      // cantidad negativa
+      if( cantidad < 0 ) {
+         throw new IllegalArgumentException("La cantidad no puede ser negativa");
+      }
+
+      // Saldo insuficiente
+      if( this.saldo < cantidad ) {
+         throw new IllegalArgumentException("El saldo es insuficiente");
+      }
+
+      // Cantidad positiva y saldo suficiente
+      this.saldo -= cantidad;
+      return true;
+   }
+
+   /**
+    * Obtiene el saldo actual de la cuenta.
+    * @return El saldo disponible en la cuenta.
+    */
+   public double obtenerSaldo() {
+      return saldo;
+   }
 }
+
 ```
 
 ### **Clase de Pruebas con JUnit**
 ```java
+package org.example;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Pruebas unitarias para la clase CuentaBancaria.
- */
 class CuentaBancariaTest {
 
-    private CuentaBancaria cuenta;
+   private CuentaBancaria cuentaBancaria;
 
-    @BeforeEach
-    void setUp() {
-        cuenta = new CuentaBancaria();
-    }
+   @BeforeEach
+   void setUp() {
+      cuentaBancaria = new CuentaBancaria();
+   }
 
-    @Test
-    void testDepositar() {
-        cuenta.depositar(1000);
-        assertEquals(1000, cuenta.obtenerSaldo(), "El saldo debe ser 1000 después de depositar");
-    }
+   @Test
+   void depositarSaldoPositivo() {
+      cuentaBancaria.depositar(35);
+      assertEquals(35, cuentaBancaria.obtenerSaldo(), "El saldo debe ser 35 después de depositar");
+   }
 
-    @Test
-    void testDepositarCantidadNegativa() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> cuenta.depositar(-500));
-        assertEquals("El monto debe ser positivo", exception.getMessage());
-    }
+   @Test
+   void depositarSaldoCero() {
+      /* Ojo! recuerda que creamos un objeto cuentaBancaria nuevo antes de cada test (ver @BeforeEach) */
+      cuentaBancaria.depositar(0);
+      assertEquals(0, cuentaBancaria.obtenerSaldo(), "El saldo debe ser 0 después de depositar");
+   }
 
-    @Test
-    void testRetirarConSaldoSuficiente() {
-        cuenta.depositar(1000);
-        assertTrue(cuenta.retirar(500), "Debe permitir el retiro si hay saldo suficiente");
-        assertEquals(500, cuenta.obtenerSaldo(), "El saldo debe actualizarse correctamente");
-    }
+   @Test
+   void depositarSaldoNegativo() {
+      /* En caso de que el depósito sea negativo, se lanza una excepción tipo IllegalArgumentException */
+      // cuentaBancaria.depositar(-3);
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> cuentaBancaria.depositar(-3));
+      assertEquals("La cantidad no puede ser negativa", exception.getMessage());
+   }
 
-    @Test
-    void testRetirarSinSaldoSuficiente() {
-        assertFalse(cuenta.retirar(1000), "No debe permitir retiro sin saldo suficiente");
-    }
+   @Test
+   void testRetirarConSaldoSuficiente() {
+      cuentaBancaria.depositar(1000);
+      assertTrue(cuentaBancaria.retirar(500), "Debe permitir el retiro si hay saldo suficiente");
+      assertEquals(500, cuentaBancaria.obtenerSaldo(), "El saldo debe actualizarse correctamente");
+   }
 
-    @Test
-    void testRetirarCantidadNegativa() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> cuenta.retirar(-100));
-        assertEquals("No se puede retirar una cantidad negativa", exception.getMessage());
-    }
+   @Test
+   void testRetirarSinSaldoSuficiente() {
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> cuentaBancaria.retirar(47));
+      assertEquals("El saldo es insuficiente", exception.getMessage());
+   }
+
+   @Test
+   void testRetirarCantidadNegativa() {
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> cuentaBancaria.retirar(-100));
+      assertEquals("La cantidad no puede ser negativa", exception.getMessage());
+   }
 }
 ```
 
